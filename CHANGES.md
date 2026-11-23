@@ -40,7 +40,14 @@
 
 QQ Gateway 协议、消息收发、Waifu 依赖、附件、引用、channel.v1 其余语义、installation_scope: device。
 
-## plugins/packages/external/connector_hub（1.1.0 -> 1.2.1）
+## plugins/packages/external/connector_hub（1.1.0 -> 1.2.2）
+
+### 1.2.2
+
+- 会话行副标题的机器人名改为仅在有账号元数据时显示（微信 / 飞书等无多账号能力的渠道不再显示原始 accountId，恢复官方版外观）
+- tests/account-filter.test.js 对应更新：无元数据渠道断言为空串
+
+### 1.2.1
 
 - src/api.ts
   - 新增 ConnectorAccount（accountId/name/service/configured/listenerEnabled/autoReplyEnabled/directEnabled/groupMode/received/replied/failed/running/error）

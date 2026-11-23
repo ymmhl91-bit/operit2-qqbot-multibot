@@ -106,9 +106,9 @@ export default function consoleScreen(ctx: ComposeDslContext): ComposeNode {
   const closeConversation = () => { select(null); setHistory(null); setReply(null); setDraft(""); setMedia(null); setNotice(""); setError(""); };
   const conversations = data?.conversations ?? [];
   const connectorFor = (channel: Channel) => data?.connectors.find(connector => connector.channel === channel);
-  /** Names the bot that owns one account id, falling back to the raw id. */
+  /** Names the bot that owns one account id; channels without account metadata stay silent. */
   const accountName = (channel: Channel, accountId: string): string =>
-    connectorFor(channel)?.accounts?.find(account => account.accountId === accountId)?.name ?? accountId;
+    connectorFor(channel)?.accounts?.find(account => account.accountId === accountId)?.name ?? "";
   const openConversation = (item: Conversation) => run(async () => {
     await load(item); select(item); setReply(null); setDraft(""); setMedia(null); setView("conversations");
   });

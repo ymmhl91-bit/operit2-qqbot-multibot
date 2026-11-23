@@ -41,12 +41,13 @@ function visibleConversations(data, filter, accountFilter, query) {
     && item.title.toLocaleLowerCase().includes(search));
 }
 
-/** Mirrors the label helper that names the owning bot. */
+/** Mirrors the label helper: names the owning bot, silent when the channel has no metadata. */
 function accountName(data, channel, accountId) {
-  return data.connectors.find(item => item.channel === channel)?.accounts?.find(a => a.accountId === accountId)?.name ?? accountId;
+  return data.connectors.find(item => item.channel === channel)?.accounts?.find(a => a.accountId === accountId)?.name ?? "";
 }
 
 const say = message => process.stdout.write(`${message}\n`);
+const legacyLike = { connectors: [{ channel: "wechat", available: true }], conversations: [] };
 const data = dashboard();
 
 // --- every conversation still shows when nothing is narrowed
@@ -79,8 +80,9 @@ say("ok: the bot selector is scoped to the visible channel");
 // --- rows must name the owning bot, not a raw id
 assert.strictEqual(accountName(data, "qq", "111"), "肥鱼", "row shows the bot name");
 assert.strictEqual(accountName(data, "qq", "222"), "claude大小姐", "row shows each bot's own name");
-assert.strictEqual(accountName(data, "qq", "999"), "999", "an unknown account falls back to its id");
-say("ok: conversation rows name the owning bot");
+assert.strictEqual(accountName(data, "qq", "999"), "", "a channel without matching metadata renders no bot label");
+assert.strictEqual(accountName(legacyLike, "wechat", "wxid_abc"), "", "channels without accounts show no bot label, matching the official look");
+say("ok: conversation rows name the owning bot, and stay silent on wx/feishu");
 
 // --- a channel with no account support must not break the list
 const legacy = { connectors: [{ channel: "qq", available: true, status: { channel: "qq", service: "ready", capture: false, conversationIds: null, channelOnlyWhenNoAuto: false } }],

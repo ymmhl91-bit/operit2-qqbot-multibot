@@ -21,13 +21,13 @@
 从 [Releases](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest) 下载编译好的插件包：
 
 - [qqbot-1.5.0.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.0.toolpkg)
-- [connector_hub-1.2.1.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.1.toolpkg)
+- [connector_hub-1.2.2.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.2.toolpkg)
 
 命令行直下：
 
 ```sh
 curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.0.toolpkg
-curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.1.toolpkg
+curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.2.toolpkg
 ```
 
 想自己编译则看下文「构建」。
@@ -49,7 +49,7 @@ plugins/packages/external/
 | 包 | 上游 | 本分叉 | 主要改动 |
 |---|---|---|---|
 | qqbot | 1.4.2 | 1.5.0 | 单账号改多账号; 新增 6 个管理工具; channel.v1 加 accounts/accountId; 启动即开回复; ack 按账号路由修复 |
-| connector_hub | 1.1.0 | 1.2.1 | 机器人账号面板; 会话列表按机器人筛选; 依赖 qqbot>=1.5.0 |
+| connector_hub | 1.1.0 | 1.2.2 | 机器人账号面板; 会话列表按机器人筛选; 会话行仅在有账号元数据时显示机器人名; 依赖 qqbot>=1.5.0 |
 
 ## 构建
 
