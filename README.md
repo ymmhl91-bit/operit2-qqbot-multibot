@@ -16,6 +16,22 @@
 
 外部连接器随之升级：QQ 页新增「机器人账号」面板（每账号独立开关），会话列表新增「按机器人筛选」。
 
+## 下载
+
+从 [Releases](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest) 下载编译好的插件包：
+
+- [qqbot-1.5.0.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.0.toolpkg)
+- [connector_hub-1.2.1.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.1.toolpkg)
+
+命令行直下：
+
+```sh
+curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.0.toolpkg
+curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.1.toolpkg
+```
+
+想自己编译则看下文「构建」。
+
 ## 仓库结构
 
 ```
