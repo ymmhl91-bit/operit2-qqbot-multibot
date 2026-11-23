@@ -1,0 +1,1145 @@
+/* METADATA
+{
+    "api_version": "2.0.0",
+  "name": "qqbot",
+  "display_name": {
+    "zh": "QQ Bot",
+    "en": "QQ Bot"
+  },
+  "description": {
+    "zh": "QQ Bot 原生网络监听、C2C/群消息、事件队列和 AI 自动回复。openid 由接收事件获得，不是 QQ 号。",
+    "en": "Native QQ Bot Gateway, C2C/group messaging, events and AI replies. Use openids from inbound events."
+  },
+  "category": "Communication",
+  "tools": [
+    {
+      "name": "usage_advice",
+      "description": {
+        "zh": "查看 QQ Bot 配置、接收和回复的使用方法。",
+        "en": "Read QQ Bot setup and messaging instructions."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_configure",
+      "description": {
+        "zh": "保存 QQ Bot 配置。listener_enabled 控制应用启动时的原生监听。",
+        "en": "Save QQ Bot credentials and listener configuration."
+      },
+      "parameters": [
+        {
+          "name": "app_id",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ Bot AppID",
+            "en": "app_id"
+          }
+        },
+        {
+          "name": "app_secret",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ Bot AppSecret",
+            "en": "app_secret"
+          }
+        },
+        {
+          "name": "use_sandbox",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "是否使用 QQ 沙箱环境",
+            "en": "use_sandbox"
+          }
+        },
+        {
+          "name": "listener_enabled",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "是否启用应用生命周期监听",
+            "en": "listener_enabled"
+          }
+        },
+        {
+          "name": "test_connection",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "保存后验证远程连接",
+            "en": "test_connection"
+          }
+        },
+        {
+          "name": "restart_service",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "保存后重启监听",
+            "en": "restart_service"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_status",
+      "description": {
+        "zh": "读取连接、事件队列和自动回复状态，不返回密钥。",
+        "en": "Read connection, event queue and AI reply status without secrets."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_dashboard_status",
+      "description": {
+        "zh": "读取 QQ Bot 仪表盘状态。",
+        "en": "Read QQ Bot dashboard status."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_test_connection",
+      "description": {
+        "zh": "验证鉴权并获取机器人资料和 Gateway。",
+        "en": "Verify credentials and retrieve the bot profile and Gateway."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_service_start",
+      "description": {
+        "zh": "启动原生 Gateway 并等待 READY。restart=true 可显式重启。",
+        "en": "Start the native Gateway and await READY; restart explicitly when requested."
+      },
+      "parameters": [
+        {
+          "name": "restart",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "显式重启现有连接",
+            "en": "restart"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_service_stop",
+      "description": {
+        "zh": "关闭 Gateway、停止自动回复并禁用开机监听。",
+        "en": "Close the Gateway, stop AI work and disable listener startup."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_receive_events",
+      "description": {
+        "zh": "读取有界事件队列。consume 默认 true；scene 支持 c2c/group/unknown；include_raw 返回原始数据。",
+        "en": "Read queued events with consumption and scene/type filters."
+      },
+      "parameters": [
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "返回事件数，1..100，默认 20",
+            "en": "limit"
+          }
+        },
+        {
+          "name": "consume",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "读取后消费事件，默认 true",
+            "en": "consume"
+          }
+        },
+        {
+          "name": "scene",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "事件场景：c2c、group 或 unknown",
+            "en": "scene"
+          }
+        },
+        {
+          "name": "event_type",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ 官方事件名称的精确匹配",
+            "en": "event_type"
+          }
+        },
+        {
+          "name": "include_raw",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "返回原始 Gateway payload，默认 false",
+            "en": "include_raw"
+          }
+        },
+        {
+          "name": "auto_start",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "显式请求启动监听，默认 false",
+            "en": "auto_start"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_clear_events",
+      "description": {
+        "zh": "清空待消费事件。",
+        "en": "Clear queued inbound events."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_send_c2c_message",
+      "description": {
+        "zh": "向 user_openid 发送消息。回复时填写 msg_id；payload 为 JSON 对象文本，可指定 QQ 富媒体字段。",
+        "en": "Send to a user openid; include msg_id for a reply and optional JSON payload for rich messages."
+      },
+      "parameters": [
+        {
+          "name": "openid",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "接收事件中的 user_openid，不是 QQ 号",
+            "en": "openid"
+          }
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "文本消息内容",
+            "en": "content"
+          }
+        },
+        {
+          "name": "msg_type",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "消息类型；常用 0 文本、2 Markdown、7 媒体、8 图文卡片；可根据显式富消息字段推断",
+            "en": "Message type: 0 text, 2 Markdown, 7 media, 8 card; inferred from rich attributes when omitted"
+          }
+        },
+        {
+          "name": "msg_id",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "被回复的入站消息 ID",
+            "en": "msg_id"
+          }
+        },
+        {
+          "name": "event_id",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "关联的 QQ 事件 ID",
+            "en": "event_id"
+          }
+        },
+        {
+          "name": "msg_seq",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "当前回复源的正整数发送序号",
+            "en": "msg_seq"
+          }
+        },
+        {
+          "name": "payload",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "额外 QQ 消息字段组成的 JSON 对象文本",
+            "en": "payload"
+          }
+        },
+        {
+          "name": "markdown",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ Markdown 对象的 JSON 文本（可省略 msg_type，自动推断为 2）",
+            "en": "QQ Markdown object as JSON; infers msg_type=2"
+          }
+        },
+        {
+          "name": "keyboard",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ 内嵌按钮对象的 JSON 文本",
+            "en": "QQ keyboard object as JSON"
+          }
+        },
+        {
+          "name": "card",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ 图文卡片对象的 JSON 文本（自动推断 msg_type=8）",
+            "en": "QQ card object as JSON; infers msg_type=8"
+          }
+        },
+        {
+          "name": "media",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "已上传媒体对象的 JSON 文本，包含 file_info",
+            "en": "Uploaded media object as JSON with file_info"
+          }
+        },
+        {
+          "name": "message_reference",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "原生引用对象 JSON：message_id 使用事件 referenceIndex（msg_idx），不是内部 Chat ID",
+            "en": "Native reference JSON; message_id uses the event referenceIndex (msg_idx)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_send_group_message",
+      "description": {
+        "zh": "向 group_openid 发送消息。回复时填写 msg_id；payload 为 JSON 对象文本。",
+        "en": "Send to a group openid with an optional source message and JSON payload."
+      },
+      "parameters": [
+        {
+          "name": "group_openid",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "接收事件中的 group_openid",
+            "en": "group_openid"
+          }
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "文本消息内容",
+            "en": "content"
+          }
+        },
+        {
+          "name": "msg_type",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "消息类型；常用 0 文本、2 Markdown、7 媒体、8 图文卡片；可根据显式富消息字段推断",
+            "en": "Message type: 0 text, 2 Markdown, 7 media, 8 card; inferred from rich attributes when omitted"
+          }
+        },
+        {
+          "name": "msg_id",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "被回复的入站消息 ID",
+            "en": "msg_id"
+          }
+        },
+        {
+          "name": "event_id",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "关联的 QQ 事件 ID",
+            "en": "event_id"
+          }
+        },
+        {
+          "name": "msg_seq",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "当前回复源的正整数发送序号",
+            "en": "msg_seq"
+          }
+        },
+        {
+          "name": "payload",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "额外 QQ 消息字段组成的 JSON 对象文本",
+            "en": "payload"
+          }
+        },
+        {
+          "name": "markdown",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ Markdown 对象的 JSON 文本（可省略 msg_type，自动推断为 2）",
+            "en": "QQ Markdown object as JSON; infers msg_type=2"
+          }
+        },
+        {
+          "name": "keyboard",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ 内嵌按钮对象的 JSON 文本",
+            "en": "QQ keyboard object as JSON"
+          }
+        },
+        {
+          "name": "card",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "QQ 图文卡片对象的 JSON 文本（自动推断 msg_type=8）",
+            "en": "QQ card object as JSON; infers msg_type=8"
+          }
+        },
+        {
+          "name": "media",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "已上传媒体对象的 JSON 文本，包含 file_info",
+            "en": "Uploaded media object as JSON with file_info"
+          }
+        },
+        {
+          "name": "message_reference",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "原生引用对象 JSON：message_id 使用事件 referenceIndex（msg_idx），不是内部 Chat ID",
+            "en": "Native reference JSON; message_id uses the event referenceIndex (msg_idx)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_auto_reply_configure",
+      "description": {
+        "zh": "配置 C2C/群 AI 回复、超时、会话分组、角色选择标识和额外指令。",
+        "en": "Configure AI replies, deadlines, chat grouping, character selection and instructions."
+      },
+      "parameters": [
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "是否启用 AI 自动回复",
+            "en": "enabled"
+          }
+        },
+        {
+          "name": "c2c_enabled",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "是否处理私聊消息",
+            "en": "c2c_enabled"
+          }
+        },
+        {
+          "name": "group_enabled",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "是否处理群消息",
+            "en": "group_enabled"
+          }
+        },
+        {
+          "name": "ai_timeout_ms",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "AI 请求超时毫秒数，1000..600000",
+            "en": "ai_timeout_ms"
+          }
+        },
+        {
+          "name": "chat_group",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "自动回复会话所在的分组名称",
+            "en": "chat_group"
+          }
+        },
+        {
+          "name": "character_selection",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "角色卡插件的选择标识，新建会话时生效",
+            "en": "character_selection"
+          }
+        },
+        {
+          "name": "assistant_instruction",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "随入站消息提交的 QQ 回复指令",
+            "en": "assistant_instruction"
+          }
+        },
+        {
+          "name": "start_now",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "保存后启动自动回复，默认 true",
+            "en": "start_now"
+          }
+        },
+        {
+          "name": "waifu_profile",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "Waifu 插件配置名称",
+            "en": "Named waifu dependency profile"
+          }
+        },
+        {
+          "name": "group_context",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "shared 默认群共享线性上下文；member 按成员隔离，同群仍串行",
+            "en": "shared 默认群共享线性上下文；member 按成员隔离，同群仍串行"
+          }
+        },
+        {
+          "name": "group_reply_mode",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "mentioned 默认仅被 @ 回复；all 回复所有实际收到的群消息",
+            "en": "mentioned 默认仅被 @ 回复；all 回复所有实际收到的群消息"
+          }
+        },
+        {
+          "name": "listen_group_messages",
+          "type": "boolean",
+          "required": false,
+          "description": {
+            "zh": "是否记录实际收到的普通群消息，默认 true；不改变平台事件权限",
+            "en": "是否记录实际收到的普通群消息，默认 true；不改变平台事件权限"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_auto_reply_status",
+      "description": {
+        "zh": "读取自动回复和会话绑定。",
+        "en": "Read AI reply status and conversation bindings."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_auto_reply_start",
+      "description": {
+        "zh": "启用自动回复并启动已配置的监听。",
+        "en": "Enable automatic replies on the configured listener."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_auto_reply_stop",
+      "description": {
+        "zh": "停止自动回复并取消正在执行的 AI 请求。",
+        "en": "Disable AI replies and cancel active generation."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_auto_reply_run_once",
+      "description": {
+        "zh": "处理一条符合自动回复场景配置的待处理消息。",
+        "en": "Process one eligible queued message."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_waifu_preview",
+      "description": {
+        "zh": "在指定会话中预览依赖插件的真实 AI 流式分句及图片，返回各段出现时间，不向 QQ 发消息。",
+        "en": "Preview real waifu dependency segments and arrival times in an explicit chat."
+      },
+      "parameters": [
+        {
+          "name": "chat_id",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "会话 ID",
+            "en": "Conversation ID"
+          }
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "预览输入",
+            "en": "Input text"
+          }
+        },
+        {
+          "name": "profile",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "Waifu 配置名称，默认 default",
+            "en": "Waifu profile name, default: default"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_upload_image",
+      "description": {
+        "zh": "通过 QQ 原生接口上传图片并返回 file_info，不发送消息。",
+        "en": "Upload an image through QQ and return file_info without sending a message."
+      },
+      "parameters": [
+        {
+          "name": "scene",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "c2c 或 group",
+            "en": "scene"
+          }
+        },
+        {
+          "name": "target",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "目标 user_openid 或 group_openid",
+            "en": "target"
+          }
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "图片 HTTP(S) 地址或 Host 文件路径",
+            "en": "source"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_upload_media",
+      "description": {
+        "zh": "上传图片、视频、语音或文件并返回 file_info，不发送消息。",
+        "en": "Upload image, video, audio or file and return file_info without sending."
+      },
+      "parameters": [
+        {
+          "name": "scene",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "c2c 或 group",
+            "en": "c2c or group"
+          }
+        },
+        {
+          "name": "target",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "目标 user_openid 或 group_openid",
+            "en": "Target openid"
+          }
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "image 图片、video 视频、audio 语音、file 文件",
+            "en": "image, video, audio or file"
+          }
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "HTTP(S) 地址或宿主本地文件路径；本地直传最多 5 MiB",
+            "en": "HTTP(S) URL or host file path; direct local uploads up to 5 MiB"
+          }
+        },
+        {
+          "name": "file_name",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "上传文件名；本地文件默认取路径中的文件名",
+            "en": "Optional upload filename"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_send_media",
+      "description": {
+        "zh": "上传并发送图片、视频、语音或文件，可携带正文、被动回复 ID 和原生引用。",
+        "en": "Upload and send image, video, audio or file with optional text and native quote."
+      },
+      "parameters": [
+        {
+          "name": "scene",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "c2c 或 group",
+            "en": "c2c or group"
+          }
+        },
+        {
+          "name": "target",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "目标 user_openid 或 group_openid",
+            "en": "Target openid"
+          }
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "image 图片、video 视频、audio 语音、file 文件",
+            "en": "image, video, audio or file"
+          }
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": true,
+          "description": {
+            "zh": "HTTP(S) 地址或宿主本地文件路径；本地直传最多 5 MiB",
+            "en": "HTTP(S) URL or host file path; direct local uploads up to 5 MiB"
+          }
+        },
+        {
+          "name": "file_name",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "上传文件名；本地文件默认取路径中的文件名",
+            "en": "Optional upload filename"
+          }
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "随媒体发送的正文",
+            "en": "Optional caption"
+          }
+        },
+        {
+          "name": "msg_id",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "被动回复的原始消息 ID",
+            "en": "Passive reply message ID"
+          }
+        },
+        {
+          "name": "event_id",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "被动回复的事件 ID",
+            "en": "Passive reply event ID"
+          }
+        },
+        {
+          "name": "msg_seq",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "发送序号，省略时自动递增",
+            "en": "Optional sequence; automatically incremented"
+          }
+        },
+        {
+          "name": "message_reference",
+          "type": "string",
+          "required": false,
+          "description": {
+            "zh": "原生引用对象 JSON，message_id 为 referenceIndex（msg_idx）",
+            "en": "Native reference object as JSON"
+          }
+        }
+      ]
+    },
+    {
+      "name": "qqbot_bots",
+      "description": {
+        "zh": "列出已添加的多个 QQ 机器人及其独立连接、队列和角色配置。",
+        "en": "List every configured QQ Bot with its own connection, queue and role."
+      },
+      "parameters": []
+    },
+    {
+      "name": "qqbot_add_bot",
+      "description": {
+        "zh": "添加一个 QQ 机器人（AppID + AppSecret），可指定名称与角色卡，之后同时运行。",
+        "en": "Add one QQ Bot with its own credentials, optional name and character card."
+      },
+      "parameters": [
+        {
+          "name": "app_id",
+          "type": "string",
+          "required": true,
+          "description": {"zh": "QQ 机器人 AppID", "en": "app_id"}
+        },
+        {
+          "name": "app_secret",
+          "type": "string",
+          "required": true,
+          "description": {"zh": "QQ 机器人 AppSecret", "en": "app_secret"}
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": {"zh": "这个机器人的显示名称", "en": "display name"}
+        },
+        {
+          "name": "character_selection",
+          "type": "string",
+          "required": false,
+          "description": {"zh": "角色卡选择标识，如 card:<id> 或 group:<id>；留空跟随当前角色", "en": "character selection"}
+        },
+        {
+          "name": "use_sandbox",
+          "type": "boolean",
+          "required": false,
+          "description": {"zh": "是否使用 QQ 沙箱环境", "en": "use_sandbox"}
+        },
+        {
+          "name": "start",
+          "type": "boolean",
+          "required": false,
+          "description": {"zh": "添加后立即启动监听与自动回复", "en": "start right away"}
+        },
+        {
+          "name": "test_connection",
+          "type": "boolean",
+          "required": false,
+          "description": {"zh": "保存前先验证凭据", "en": "verify credentials first"}
+        }
+      ]
+    },
+    {
+      "name": "qqbot_update_bot",
+      "description": {
+        "zh": "修改指定 QQ 机器人的凭据、名称、角色卡或回复范围；未传字段保持不变。",
+        "en": "Patch one QQ Bot; omitted fields keep their current values."
+      },
+      "parameters": [
+        {
+          "name": "bot_id",
+          "type": "string",
+          "required": true,
+          "description": {"zh": "qqbot_bots 返回的机器人 ID", "en": "bot_id from qqbot_bots"}
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": {"zh": "显示名称", "en": "display name"}
+        },
+        {
+          "name": "app_id",
+          "type": "string",
+          "required": false,
+          "description": {"zh": "新的 AppID", "en": "new app_id"}
+        },
+        {
+          "name": "app_secret",
+          "type": "string",
+          "required": false,
+          "description": {"zh": "新的 AppSecret", "en": "new app_secret"}
+        },
+        {
+          "name": "character_selection",
+          "type": "string",
+          "required": false,
+          "description": {"zh": "角色卡选择标识，留空跟随当前角色", "en": "character selection"}
+        },
+        {
+          "name": "waifu_profile",
+          "type": "string",
+          "required": false,
+          "description": {"zh": "Waifu 回复效果配置名称", "en": "waifu profile"}
+        },
+        {
+          "name": "chat_group",
+          "type": "string",
+          "required": false,
+          "description": {"zh": "聊天记录分组", "en": "chat group"}
+        },
+        {
+          "name": "c2c_enabled",
+          "type": "boolean",
+          "required": false,
+          "description": {"zh": "是否回复私聊", "en": "reply private messages"}
+        },
+        {
+          "name": "group_enabled",
+          "type": "boolean",
+          "required": false,
+          "description": {"zh": "是否回复群消息", "en": "reply group messages"}
+        },
+        {
+          "name": "use_sandbox",
+          "type": "boolean",
+          "required": false,
+          "description": {"zh": "是否使用沙箱环境", "en": "use_sandbox"}
+        },
+        {
+          "name": "start",
+          "type": "boolean",
+          "required": false,
+          "description": {"zh": "修改后启动这个机器人", "en": "start after updating"}
+        }
+      ]
+    },
+    {
+      "name": "qqbot_start_bot",
+      "description": {
+        "zh": "启动指定 QQ 机器人的监听与自动回复，不影响其他机器人。",
+        "en": "Start one QQ Bot without touching the others."
+      },
+      "parameters": [
+        {
+          "name": "bot_id",
+          "type": "string",
+          "required": true,
+          "description": {"zh": "机器人 ID", "en": "bot_id"}
+        },
+        {
+          "name": "restart",
+          "type": "boolean",
+          "required": false,
+          "description": {"zh": "显式重启已有连接", "en": "restart existing connection"}
+        }
+      ]
+    },
+    {
+      "name": "qqbot_stop_bot",
+      "description": {
+        "zh": "停止指定 QQ 机器人，不影响其他机器人。",
+        "en": "Stop one QQ Bot without touching the others."
+      },
+      "parameters": [
+        {
+          "name": "bot_id",
+          "type": "string",
+          "required": true,
+          "description": {"zh": "机器人 ID", "en": "bot_id"}
+        }
+      ]
+    },
+    {
+      "name": "qqbot_remove_bot",
+      "description": {
+        "zh": "停止并删除指定 QQ 机器人配置，不影响其他机器人。",
+        "en": "Stop and delete one QQ Bot configuration."
+      },
+      "parameters": [
+        {
+          "name": "bot_id",
+          "type": "string",
+          "required": true,
+          "description": {"zh": "机器人 ID", "en": "bot_id"}
+        }
+      ]
+    },
+    {
+      "name": "qqbot_chat_context",
+      "description": {
+        "zh": "读取当前 QQ Bot 会话的近期聊天前文，被 @ 时可用来了解群友讨论。默认20条，最多50条和12000字，不消费消息；成员隔离时只返回当前成员消息。只能用于 Bot 绑定聊天。",
+        "en": "Read bounded recent messages for the current QQ Bot chat, scoped to its conversation and member isolation setting."
+      },
+      "parameters": [
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "返回条数，1..50，默认20",
+            "en": "Message count, 1..50, default 20"
+          }
+        },
+        {
+          "name": "before",
+          "type": "number",
+          "required": false,
+          "description": {
+            "zh": "只读取此接收时间（毫秒）之前的消息",
+            "en": "Only messages received before this epoch millisecond"
+          }
+        }
+      ]
+    }
+  ],
+  "enabled_by_default": true
+}
+*/
+import { stream as waifuStream, type Segment } from "./dependencies/waifu/api.js";
+import { call } from "./rpc.js";
+import { object, type AutoReplyParams, type BotAddParams, type BotUpdateParams, type ConfigureParams, type ReceiveParams, type Response, type SendParams } from "./model.js";
+
+type JsonField = "payload" | "markdown" | "keyboard" | "card" | "media" | "message_reference";
+type ToolSendParams = Omit<SendParams, JsonField> & Partial<Record<JsonField, string>>;
+type ToolMediaParams = { scene: "c2c" | "group"; target: string; kind: import("./channel-api.js").MediaKind; source: string; file_name?: string };
+
+/** Describes the v2 setup and event-based reply workflow. */
+export function usage_advice(): { advice: string } {
+  return { advice: "使用 qqbot_configure 保存 app_id、app_secret，再使用 qqbot_service_start。收到事件后从 replyHint 取得 openid/group_openid 和 msg_id，调用对应发送工具。开启自动回复前配置 AI 模型和执行角色。QQ 号不能代替 openid。应用需保持运行，连接错误可在状态页查看。" };
+}
+/** Saves application credentials and native listener controls. */
+export function qqbot_configure(params: ConfigureParams = {}): Promise<Response> { return call({ action: "configure", params }); }
+/** Reads the authoritative main-runtime status. */
+export function qqbot_status(): Promise<Response> { return call({ action: "status" }); }
+/** Reads the dashboard projection from the same owner. */
+export function qqbot_dashboard_status(): Promise<Response> { return call({ action: "status" }); }
+/** Verifies the configured QQ credentials against the remote API. */
+export function qqbot_test_connection(): Promise<Response> { return call({ action: "test" }); }
+/** Starts and optionally restarts the native Gateway. */
+export function qqbot_service_start(params: { restart?: boolean } = {}): Promise<Response> { return call({ action: "start", ...params }); }
+/** Stops the native listener and its AI consumer. */
+export function qqbot_service_stop(): Promise<Response> { return call({ action: "stop" }); }
+/** Reads only the requested events and consumption policy. */
+export function qqbot_receive_events(params: ReceiveParams = {}): Promise<Response> { return call({ action: "receive", params }); }
+/** Clears pending inbound events in the main runtime. */
+export function qqbot_clear_events(): Promise<Response> { return call({ action: "clear" }); }
+/** Parses the explicitly declared JSON payload tool argument. */
+function sendParams(params: ToolSendParams): SendParams {
+  const { payload, markdown, keyboard, card, media, message_reference, ...fields } = params;
+  const result: SendParams = { ...fields };
+  for (const [field, value] of Object.entries({ payload, markdown, keyboard, card, media, message_reference })) {
+    if (value !== undefined) (result as Record<string, unknown>)[field] = object(JSON.parse(value), field);
+  }
+  return result;
+}
+/** Sends one C2C message through the configured QQ application. */
+export function qqbot_send_c2c_message(params: ToolSendParams & { openid: string }): Promise<Response> { return call({ action: "send_c2c", params: { ...sendParams(params), openid: params.openid } }); }
+/** Sends one group message through the configured QQ application. */
+export function qqbot_send_group_message(params: ToolSendParams & { group_openid: string }): Promise<Response> { return call({ action: "send_group", params: { ...sendParams(params), group_openid: params.group_openid } }); }
+/** Persists explicit automatic reply settings. */
+export function qqbot_auto_reply_configure(params: AutoReplyParams = {}): Promise<Response> { return call({ action: "auto_configure", params }); }
+/** Reads automatic reply state and durable conversation identities. */
+export function qqbot_auto_reply_status(): Promise<Response> { return call({ action: "status" }); }
+/** Enables the sequential automatic reply consumer. */
+export function qqbot_auto_reply_start(): Promise<Response> { return call({ action: "auto_start" }); }
+/** Stops and cancels the automatic reply consumer. */
+export function qqbot_auto_reply_stop(): Promise<Response> { return call({ action: "auto_stop" }); }
+/** Processes exactly one eligible message without starting an additional loop. */
+export function qqbot_auto_reply_run_once(): Promise<Response> { return call({ action: "auto_once" }); }
+
+/** Previews actual dependency streaming and records delivery timing in an explicitly selected chat. */
+export async function qqbot_waifu_preview(params: { chat_id: string; message: string; profile?: string }): Promise<{ segments: { elapsedMs: number; segment: Segment }[]; completedAfterMs: number }> {
+  const { profile = "default" } = params, started = Date.now();
+  const segments: { elapsedMs: number; segment: Segment }[] = [];
+  for await (const event of waifuStream({ kind: "submit", chatId: params.chat_id, runtime: "main", input: { text: params.message, attachments: [], replyToMessageTimestamp: null }, turn: { kind: "execute" }, notifyReply: false }, profile)) {
+    if (event.type === "segment") segments.push({ elapsedMs: Date.now() - started, segment: event.segment });
+  }
+  return { segments, completedAfterMs: Date.now() - started };
+}
+
+/** Uploads media through the actual QQ owner runtime without submitting a message. */
+export function qqbot_upload_image(params: { scene: "c2c" | "group"; target: string; source: string }): Promise<Response> {
+  return call({ action: "upload_image", ...params });
+}
+
+/** Uploads any supported QQ media type without sending it. */
+export function qqbot_upload_media(params: ToolMediaParams): Promise<Response> {
+  return call({ action: "upload_media", scene: params.scene, target: params.target,
+    media: { kind: params.kind, source: params.source, fileName: params.file_name } });
+}
+/** Sends uploaded media with typed routing, text and quote fields. */
+export function qqbot_send_media(params: ToolMediaParams & ToolSendParams): Promise<Response> {
+  const { scene, target, kind, source, file_name, ...fields } = params;
+  return call({ action: "send_media", scene, target, media: { kind, source, fileName: file_name }, params: sendParams(fields) });
+}
+
+/** Lists every configured QQ Bot so multi-account routing stays explicit. */
+export function qqbot_bots(): Promise<Response> { return call({ action: "bots_list" }); }
+
+/** Adds one more QQ Bot; each one keeps its own credentials, role and reply queue. */
+export function qqbot_add_bot(params: BotAddParams): Promise<Response> {
+  return call({ action: "bot_add", params: { ...params,
+    ...(params.app_id === undefined ? {} : { app_id: params.app_id.trim() }),
+    ...(params.app_secret === undefined ? {} : { app_secret: params.app_secret.trim() }),
+    ...(params.name === undefined ? {} : { name: params.name.trim() }) } });
+}
+
+/** Patches one QQ Bot; omitted fields are left exactly as they were. */
+export function qqbot_update_bot(params: BotUpdateParams): Promise<Response> {
+  return call({ action: "bot_update", params });
+}
+
+/** Starts one QQ Bot without disturbing any other connected account. */
+export function qqbot_start_bot(params: { bot_id: string; restart?: boolean }): Promise<Response> {
+  return call({ action: "bot_start", bot_id: params.bot_id, restart: params.restart === true });
+}
+
+/** Stops one QQ Bot without disturbing any other connected account. */
+export function qqbot_stop_bot(params: { bot_id: string }): Promise<Response> {
+  return call({ action: "bot_stop", bot_id: params.bot_id });
+}
+
+/** Removes one QQ Bot configuration after stopping its connection. */
+export function qqbot_remove_bot(params: { bot_id: string }): Promise<Response> {
+  return call({ action: "bot_remove", bot_id: params.bot_id });
+}
+
+/** Reads history only for the caller's actual Bot chat; no arbitrary group selector. */
+export function qqbot_chat_context(params: { limit?: number; before?: number } = {}): Promise<Response> {
+  const chatId = getChatId();
+  if (!chatId) throw new Error("请在 QQ Bot 绑定的聊天中读取群聊上下文。");
+  return call({ action: "chat_context", chatId, ...params });
+}

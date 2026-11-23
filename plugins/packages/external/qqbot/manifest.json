@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.qqbot_bundle",
+  "version": "1.5.0",
+  "api_version": "2.0.0",
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "QQ Bot",
+    "en": "QQ Bot"
+  },
+  "description": {
+    "zh": "通过宿主原生网络同时连接多个腾讯 QQ Bot，每个机器人独立使用自己的角色卡、事件队列和 AI 自动回复。",
+    "en": "Connect several Tencent QQ Bots at once through host networking, each with its own character card, event queue and AI replies."
+  },
+  "enabled_by_default": false,
+  "installation_scope": "device",
+  "subpackages": [
+    {
+      "id": "qqbot",
+      "entry": "dist/tools.js"
+    }
+  ],
+  "resources": [],
+  "optional_requires": [
+    {
+      "id": "com.operit.waifu",
+      "min_version": "1.0.0"
+    },
+    {
+      "id": "com.operit.character_cards",
+      "min_version": "0.1.0"
+    }
+  ],
+  "public_api": "src/channel-api.ts"
+}
