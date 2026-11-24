@@ -20,13 +20,13 @@
 
 从 [Releases](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest) 下载编译好的插件包：
 
-- [qqbot-1.5.0.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.0.toolpkg)
+- [qqbot-1.5.1.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.1.toolpkg)
 - [connector_hub-1.2.2.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.2.toolpkg)
 
 命令行直下：
 
 ```sh
-curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.0.toolpkg
+curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.1.toolpkg
 curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.2.toolpkg
 ```
 
@@ -36,7 +36,7 @@ curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/d
 
 ```
 plugins/packages/external/
-+-- qqbot/          QQ Bot 多机器人分叉 (1.5.0): src/ tests/ manifest.json tsconfig.json README.md
++-- qqbot/          QQ Bot 多机器人分叉 (1.5.1): src/ tests/ manifest.json tsconfig.json README.md
 +-- connector_hub/  外部连接器多账号分叉 (1.2.1): src/ tests/ resources/ manifest.json tsconfig.json README.md
 ```
 
@@ -48,7 +48,7 @@ plugins/packages/external/
 
 | 包 | 上游 | 本分叉 | 主要改动 |
 |---|---|---|---|
-| qqbot | 1.4.2 | 1.5.0 | 单账号改多账号; 新增 6 个管理工具; channel.v1 加 accounts/accountId; 启动即开回复; ack 按账号路由修复 |
+| qqbot | 1.4.2 | 1.5.1 | 单账号改多账号; 新增 6 个管理工具; channel.v1 加 accounts/accountId; 启动即开回复; ack 按账号路由修复 |
 | connector_hub | 1.1.0 | 1.2.2 | 机器人账号面板; 会话列表按机器人筛选; 会话行仅在有账号元数据时显示机器人名; 依赖 qqbot>=1.5.0 |
 
 ## 构建

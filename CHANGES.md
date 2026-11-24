@@ -4,7 +4,7 @@
 上游基线: plugins/packages/external/qqbot @ 1.4.2, plugins/packages/external/connector_hub @ 1.1.0
 许可证: AGPL-3.0（未变更）
 
-## plugins/packages/external/qqbot（1.4.2 -> 1.5.0）
+## plugins/packages/external/qqbot（1.4.2 -> 1.5.1）
 
 ### 架构: 单账号 -> 多账号
 
@@ -35,6 +35,15 @@
   - multibot.test.js: 双 Bot 隔离 / 重复 AppID 拒绝 / 按 Bot 停止与删除 / 空配置可用 / 各自开 Gateway
   - connector.test.js: accounts 列表 / 按 accountId 读状态与切换回复 / 裸 start 即开回复 / ack 不串账号
   - realconfig.test.js: 真实配置迁移校验（使用者本地自行提供路径）
+
+### 1.5.1
+
+- src/service.ts: `manage start` 的自动回复开关改为直接写入 + 立即 flush + 回读校验
+  - 旧实现走 `configureAuto({enabled, start_now:false})` 再 `request({action:"start"})` 两段式调用，两步之间存在写入窗口，后续 flush 可能把旧值写回磁盘
+  - 现象：控制台/外部连接器开启自动回复后，重启 Operit 开关又变回关闭
+  - 现在开关赋值后同步 `flush()`，并用 `JSON.parse(JSON.stringify(bot)).autoReply.enabled` 回读比对，不一致直接报错「自动回复开关写入未落盘，请重试」
+  - `stop` 分支同样直写并 flush
+- manifest.json: 版本 1.5.1
 
 ### 保留不变
 

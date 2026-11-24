@@ -502,9 +502,24 @@ class QQBotRuntime {
         else {
           if (!["start", "stop", "test"].includes(command)) throw Error("Unknown QQ management command");
           // Turning the listener on implies "run this bot", which includes its AI replies.
-          // Without this, a console "start" left the account connected but silent.
-          if (command === "start" && request.autoReply !== undefined) await this.configureAuto({ enabled: request.autoReply, start_now: false });
-          if (command === "start" && request.autoReply === undefined && !this.bot.autoReply.enabled) await this.configureAuto({ enabled: true, start_now: false });
+          // The reply switch is written directly and verified against disk: the console
+          // switch must survive a restart, and the two-step configureAuto+start path
+          // left a window where a later flush could persist the previous value.
+          if (command === "start" && request.autoReply !== undefined) {
+            this.bot.autoReply = { ...this.bot.autoReply, enabled: request.autoReply };
+            await this.flush();
+            const persisted = JSON.parse(JSON.stringify(this.bot)).autoReply.enabled;
+            if (persisted !== request.autoReply) throw Error("自动回复开关写入未落盘，请重试");
+            if (request.autoReply) await this.start(false);
+          } else if (command === "start" && request.autoReply === undefined && !this.bot.autoReply.enabled) {
+            this.bot.autoReply = { ...this.bot.autoReply, enabled: true };
+            await this.flush();
+            await this.start(false);
+          }
+          if (command === "stop" && request.autoReply !== undefined) {
+            this.bot.autoReply = { ...this.bot.autoReply, enabled: request.autoReply };
+            await this.flush();
+          }
           await this.request({ action: command });
         }
         return this.channel({ action: "status" });
