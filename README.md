@@ -20,14 +20,14 @@
 
 从 [Releases](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest) 下载编译好的插件包：
 
-- [qqbot-1.5.1.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.1.toolpkg)
-- [connector_hub-1.2.2.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.2.toolpkg)
+- [qqbot-1.5.1.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/download/v1.0.1/qqbot-1.5.1.toolpkg)
+- [connector_hub-1.2.2.toolpkg](https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/download/v1.0.0/connector_hub-1.2.2.toolpkg)
 
 命令行直下：
 
 ```sh
-curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/qqbot-1.5.1.toolpkg
-curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/latest/download/connector_hub-1.2.2.toolpkg
+curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/download/v1.0.1/qqbot-1.5.1.toolpkg
+curl -LO https://github.com/ymmhl91-bit/operit2-qqbot-multibot/releases/download/v1.0.0/connector_hub-1.2.2.toolpkg
 ```
 
 想自己编译则看下文「构建」。
