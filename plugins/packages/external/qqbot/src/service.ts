@@ -743,6 +743,16 @@ class QQBotHub {
     if (params.ai_timeout_ms !== undefined) { reply.ai_timeout_ms = params.ai_timeout_ms; replyChanged = true; }
     if (Object.keys(patch).length > 1) await runtime.configure(patch);
     if (replyChanged) await runtime.configureAuto({ ...reply, start_now: false });
+    // configure() and configureAuto() each flush only the fields they touched, so a
+    // patch that mixes credential and reply fields could leave part of the edit in
+    // memory only. Flush the hub config once and re-read the value: an edit from the
+    // console must never survive only until the next restart.
+    await PluginConfig.flush(this.config);
+    if (params.waifu_profile !== undefined) {
+      const expected = nonblank(params.waifu_profile, "waifu_profile");
+      const stored = JSON.parse(JSON.stringify(this.config.bots.find(item => item.id === bot.id))).waifuProfile;
+      if (stored !== expected) throw Error("waifu_profile 写入未落盘，请重试");
+    }
     if (params.start === true) await runtime.request({ action: "start" });
     return runtime.status();
   }

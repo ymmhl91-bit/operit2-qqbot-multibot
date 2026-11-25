@@ -4,7 +4,7 @@
 上游基线: plugins/packages/external/qqbot @ 1.4.2, plugins/packages/external/connector_hub @ 1.1.0
 许可证: AGPL-3.0（未变更）
 
-## plugins/packages/external/qqbot（1.4.2 -> 1.5.1）
+## plugins/packages/external/qqbot（1.4.2 -> 1.5.2）
 
 ### 架构: 单账号 -> 多账号
 
@@ -35,6 +35,17 @@
   - multibot.test.js: 双 Bot 隔离 / 重复 AppID 拒绝 / 按 Bot 停止与删除 / 空配置可用 / 各自开 Gateway
   - connector.test.js: accounts 列表 / 按 accountId 读状态与切换回复 / 裸 start 即开回复 / ack 不串账号
   - realconfig.test.js: 真实配置迁移校验（使用者本地自行提供路径）
+
+### 1.5.2
+
+- src/service.ts: `bot_update` 补落盘与回读校验
+  - 旧实现把 `waifu_profile` 等字段交给 `configureAuto()` 写入，依赖下游 flush；
+    该路径中间夹着 `stopAuto()` / `preferWaifu()` 等异步步骤，一旦抛错，
+    内存已改、磁盘未写，重启即丢
+  - 现象：`qqbot_update_bot` 改完返回新值，但 `qqbot.json` 的 mtime 不变，重启后回退
+  - 现在 `update()` 末尾统一 `await PluginConfig.flush(this.config)`，
+    并对 `waifu_profile` 回读比对，不一致报错「waifu_profile 写入未落盘，请重试」
+- manifest.json: 版本 1.5.2
 
 ### 1.5.1
 
